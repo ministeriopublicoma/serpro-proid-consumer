@@ -3,7 +3,6 @@
     "description": "Consumer para API ProId SERPRO",
     "type": "library",
     "license": "GPL-3.0-only",
-    "version": "1.0.0",
     "author": {
         "name": "Ricardo Coelho",
         "email": "rcoelho@mpma.mp.br"
