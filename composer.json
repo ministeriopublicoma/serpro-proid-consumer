@@ -1,0 +1,22 @@
+{
+    "name": "mpma/serpro-proid-consumer",
+    "description": "Consumer para API ProId SERPRO",
+    "type": "library",
+    "license": "GNU GPLv3",
+    "author": {
+        "name": "Ricardo Coelho",
+        "email": "rcoelho@mpma.mp.br"
+    },
+    "keywords": [
+        "SERPRO",
+        "ProID"
+    ],
+    "autoload": {
+        "psr-4": {
+            "MPMA\\ProIDConsumer\\": "src/"
+        }
+    },
+    "require": {
+        "guzzlehttp/guzzle": "^6.5"
+    }
+}
