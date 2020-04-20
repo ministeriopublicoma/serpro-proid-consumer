@@ -118,7 +118,7 @@ $document
 ```php
 $dadosFuncionais = new DadosFuncionais();
 $dadosFuncionais
-    ->setNumeroRegistro('0000001') // matrícula do portador do documento
+    ->setNumeroRegistro('0000001'); // matrícula do portador do documento
 
 $carteira = new CarteiraFuncional();
 $carteira->setDados($dadosFuncionais);
