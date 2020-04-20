@@ -123,17 +123,22 @@ $dadosFuncionais
 $carteira = new CarteiraFuncional();
 $carteira->setDados($dadosFuncionais);
 
+$document = new Document();
+$document
+    ->setConfig($config)
+    ->setConsumer($consumer);
+
 /* Bloqueia o documento */
-$carteira->block($carteira, 'Motivo do bloqueio');
+$document->block($carteira, 'Motivo do bloqueio');
 
 /* Adiciona restrição a um documento */
-$carteira->restrict($carteira, 'Descrição da restrição');
+$document->restrict($carteira, 'Descrição da restrição');
 
 /* Ativa (remove bloqueios e/ou restrições) um documento */
-$carteira->activate($carteira);
+$document->activate($carteira);
 
 /* Exclui o documento */
-$carteira->delete($carteira);
+$document->delete($carteira);
 ```
 
 ### Enviar uma mensagem direcionada
