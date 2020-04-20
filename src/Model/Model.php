@@ -1,6 +1,6 @@
 <?php
 
-namespace Model;
+namespace MPMA\ProIDConsumer\Model;
 
 class Model
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace Model\VO;
+namespace MPMA\ProIDConsumer\Model\VO;
 
 use DadosFuncionais,
     ImagensFuncionais;

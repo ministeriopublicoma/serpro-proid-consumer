@@ -1,6 +1,6 @@
 <?php
 
-namespace Service;
+namespace MPMA\ProIDConsumer\Service;
 
 define('ENDPOINT_TOKEN', '/v1/token');
 

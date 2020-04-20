@@ -1,8 +1,8 @@
 <?php
 
-namespace Model\VO\MPMA;
+namespace MPMA\ProIDConsumer\Model\VO\MPMA;
 
-class DadosFuncionais extends \Model\VO\DadosFuncionais
+class DadosFuncionais extends \MPMA\ProIDConsumer\Model\VO\DadosFuncionais
 {
     protected $nome;
     protected $cargo;

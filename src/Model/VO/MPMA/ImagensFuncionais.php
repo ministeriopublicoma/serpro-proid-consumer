@@ -1,10 +1,10 @@
 <?php
 
-namespace Model\VO\MPMA;
+namespace MPMA\ProIDConsumer\Model\VO\MPMA;
 
 use Model\VO\ImagemFuncional;
 
-class ImagensFuncionais extends \Model\VO\ImagensFuncionais
+class ImagensFuncionais extends \MPMA\ProIDConsumer\Model\VO\ImagensFuncionais
 {
     protected $outras_imagens;
 

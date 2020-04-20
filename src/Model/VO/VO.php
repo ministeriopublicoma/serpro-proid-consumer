@@ -1,6 +1,6 @@
 <?php
 
-namespace Model\VO;
+namespace MPMA\ProIDConsumer\Model\VO;
 
 abstract class VO implements \JSONSerializable
 {

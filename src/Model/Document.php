@@ -3,7 +3,7 @@
  * Implementa gestão de documentos em conformidade com as definições disponíveis em
  * https://devserpro.github.io/apiserpro/apis/swagger-ui-master/dist/index.html?bearer=4e1a1858bdd584fdc077fb7d80f39283&url=https://devserpro.github.io/apiserpro/apis/swaggers/proid/swagger-proid-hom.json
 */
-namespace Model;
+namespace MPMA\ProIDConsumer\Model;
 
 define('ENDPOINT_MENSAGENS', '/v1/mensagens');
 define('ENDPOINT_DOCUMENTOS', '/v1/documentos');
