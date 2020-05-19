@@ -2,8 +2,6 @@
 
 namespace MPMA\ProIDConsumer\Model\VO\MPMA;
 
-define('CARTEIRA_FUNCIONAL_MPMA', 'dc188e69-5e45-4b7e-abdd-c88bc719ac8d');
-
 use DadosFuncionais,
     ImagensFuncionais;
 
@@ -16,9 +14,6 @@ class CarteiraFuncional extends \MPMA\ProIDConsumer\Model\VO\CarteiraFuncional
     public function __construct()
     {
         parent::__construct();
-        $this->tipo = (object) [
-            'id' => CARTEIRA_FUNCIONAL_MPMA
-        ];
     }
     public function valid()
     {

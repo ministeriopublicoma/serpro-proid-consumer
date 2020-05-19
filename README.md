@@ -48,7 +48,8 @@ use \MPMA\ProIDConsumer\Service\Config,
     \MPMA\ProIDConsumer\Model\VO\ImagemFuncional,
     \MPMA\ProIDConsumer\Model\VO\MPMA\DadosFuncionais,
     \MPMA\ProIDConsumer\Model\VO\MPMA\ImagensFuncionais,
-    \MPMA\ProIDConsumer\Model\VO\MPMA\CarteiraFuncional,
+    \MPMA\ProIDConsumer\Model\VO\MPMA\CarteiraFuncionalServidor,
+    \MPMA\ProIDConsumer\Model\VO\MPMA\CarteiraFuncionalMembro,
     \MPMA\ProIDConsumer\Model\Document,
     \MPMA\ProIDConsumer\Model\Carteira;
 
@@ -103,7 +104,10 @@ $imagensFuncionais
         $assinatura_pgj
     ]);
 
-$carteira = new CarteiraFuncional();
+$carteira = new CarteiraFuncionalServidor();
+// ou
+$carteira = new CarteiraFuncionalMembro();
+
 $carteira
     ->setDados($dadosFuncionais)
     ->setImagens($imagensFuncionais);
@@ -122,7 +126,10 @@ $dadosFuncionais = new DadosFuncionais();
 $dadosFuncionais
     ->setNumeroRegistro('0000001'); // matrícula do portador do documento
 
-$carteira = new CarteiraFuncional();
+$carteira = new CarteiraFuncionalServidor();
+// ou
+$carteira = new CarteiraFuncionalMembro();
+
 $carteira->setDados($dadosFuncionais);
 
 $document = new Document();
@@ -146,7 +153,10 @@ $document->delete($carteira);
 ### Enviar uma mensagem direcionada
 
 ```php
-$carteira = new CarteiraFuncional();
+$carteira = new CarteiraFuncionalServidor();
+// ou 
+$carteira = new CarteiraFuncionalMembro();
+
 $document = new Document();
 $document
     ->setConfig($config)
@@ -163,7 +173,10 @@ $document
 ### Enviar uma mensagem para todos
 
 ```php
-$carteira = new CarteiraFuncional();
+$carteira = new CarteiraFuncionalServidor();
+// ou 
+$carteira = new CarteiraFuncionalMembro();
+
 $document = new Document();
 $document
     ->setConfig($config)
