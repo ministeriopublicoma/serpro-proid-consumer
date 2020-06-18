@@ -12,7 +12,7 @@ do Ministério Público do Estado do Maranhão.
 Para instalar a biblioteca no seu projeto, utilize o `composer`:
 
 ```
-composer require mpma/serpro-proid-consumer
+composer require mpma/serpro-proid-consumer:2.0.0
 ```
 
 ## Dados Fornecidos pelo SERPRO
