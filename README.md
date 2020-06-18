@@ -94,8 +94,8 @@ $assinatura = new ImagemFuncional();
 $assinatura->load('assets/assinatura.png');
 
 $assinatura_pgj = new ImagemFuncional();
-$assinatura_pgj->load('assets/assinatura_presidente.png');
-$assinatura_pgj->chave = 'assinatura_presidente';
+$assinatura_pgj->load('assets/assinatura_pgj.png');
+$assinatura_pgj->chave = 'assinatura_presidente';  // chave SERPRO desta imagem
 
 /* Este QRCode é gerado internamente e só é apresentado na cópia digital
  * da carteira impressa. Não confundir com o QRCode Vio, gerado pelo
@@ -103,7 +103,7 @@ $assinatura_pgj->chave = 'assinatura_presidente';
  */
 $qrcode = new ImagemFuncional();
 $qrcode->load('assets/qrcode.png');
-$qrcode->chave = 'qrcode';
+$qrcode->chave = 'qrcode';    // chave SERPRO desta imagem
 
 $imagensFuncionais = new ImagensFuncionais();
 $imagensFuncionais
@@ -133,8 +133,7 @@ $dadosFuncionais->setNumeroRegistro('0000001'); // matrícula
 $carteira = new CarteiraFuncional(
     $dataConsumer,
     $config->docIdServidor,  // ou $config->docIdMembro
-    $dadosFuncionais,
-    $imagensFuncionais
+    $dadosFuncionais
 );
 
 /* Bloqueia o documento */
