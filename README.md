@@ -32,8 +32,7 @@ Os dados abaixo serão fornecidos pelo SERPRO e são diferentes em homologação
 ### Estrutura básica do script
 
 ```php
-use \Service\Config,
-    \MPMA\ProIDConsumer\Service\Consumer,
+use \MPMA\ProIDConsumer\Service\Consumer,
     \MPMA\ProIDConsumer\Model\VO\ImagemFuncional,
     \MPMA\ProIDConsumer\Model\VO\ImagensFuncionais,
     \MPMA\ProIDConsumer\Model\VO\DadosFuncionais,
