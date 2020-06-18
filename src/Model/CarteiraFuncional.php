@@ -12,50 +12,83 @@ define('ENDPOINT_DOCUMENTOS_RESTRICAO', '/v1/documentos/restricao');
 define('ENDPOINT_DOCUMENTOS_ATIVACAO', '/v1/documentos/ativacao');
 define('ENDPOINT_DOCUMENTOS_EXCLUSAO', '/v1/documentos/exclusao');
 
-class Document extends Model
+class CarteiraFuncional extends Model
 {
-    public function add($document)
+    protected $tipo;
+    protected $dados;
+    protected $imagens;
+
+    public function __construct($consumer, $id, $dados = null, $imagens = null)
     {
-        return $this->getConsumer()->post(ENDPOINT_DOCUMENTOS, $document);
+        parent::__construct($consumer);
+        $this->tipo = (object) [
+            'id' => $id
+        ];
+        $this->dados = $dados;
+        $this->imagens = $imagens;
     }
-    public function block($carteira, $motivo)
+    public function valid()
+    {
+        return (
+            $dados->valid() &&
+            $imagens->valid()
+        );
+    }
+    public function getDataObject()
+    {
+        $properties = (object) [
+            'tipo' => $this->tipo,
+            'dados' => $this->dados,
+            'imagens' => $this->imagens
+        ];
+        return $properties;
+    }
+    public function __toString()
+    {
+        return json_encode($this->getDataObject(), JSON_UNESCAPED_SLASHES);
+    }
+    public function add()
+    {
+        return $this->getConsumer()->post(ENDPOINT_DOCUMENTOS, $this->getDataObject());
+    }
+    public function block($motivo)
     {
         $block = (object) [
-            'tipo' => $carteira->getTipo(),
+            'tipo' => $this->tipo,
             'documento' => (object) [
-                'numero_registro' => $carteira->getNumeroRegistro()
+                'numero_registro' => $this->dados->getNumeroRegistro()
             ],
             'motivo' => $motivo
         ];
         return $this->getConsumer()->post(ENDPOINT_DOCUMENTOS_BLOQUEIO, $block);
     }
-    public function restrict($carteira, $motivo)
+    public function restrict($motivo)
     {
         $restrict = (object) [
-            'tipo' => $carteira->getTipo(),
+            'tipo' => $this->tipo,
             'documento' => (object) [
-                'numero_registro' => $carteira->getNumeroRegistro()
+                'numero_registro' => $this->dados->getNumeroRegistro()
             ],
             'motivo' => $motivo
         ];
         return $this->getConsumer()->post(ENDPOINT_DOCUMENTOS_RESTRICAO, $restrict);
     }
-    public function activate($carteira)
+    public function activate()
     {
         $activate = (object) [
-            'tipo' => $carteira->getTipo(),
+            'tipo' => $this->tipo,
             'documento' => (object) [
-                'numero_registro' => $carteira->getNumeroRegistro()
+                'numero_registro' => $this->dados->getNumeroRegistro()
             ]
         ];
         return $this->getConsumer()->post(ENDPOINT_DOCUMENTOS_ATIVACAO, $activate);
     }
-    public function delete($carteira)
+    public function delete()
     {
         $delete = (object) [
-            'tipo' => $carteira->getTipo(),
+            'tipo' => $this->tipo,
             'documento' => (object) [
-                'numero_registro' => $carteira->getNumeroRegistro()
+                'numero_registro' => $this->dados->getNumeroRegistro()
             ]
         ];
 
@@ -66,7 +99,7 @@ class Document extends Model
     {
         return $this->getConsumer()->post(ENDPOINT_MENSAGENS, $object);
     }
-    public function sendBroadcast($carteira, $titulo, $conteudo, $links = [], $validadeInicio = '', $validadeFim = '')
+    public function sendBroadcast($titulo, $conteudo, $links = [], $validadeInicio = '', $validadeFim = '')
     {
         if (empty($validadeInicio))
             $validadeInicio = date('Y-m-d\T00:00:00-03:00');
@@ -85,7 +118,7 @@ class Document extends Model
             'titulo' => $titulo,
             'conteudo' => $conteudo,
             'destino' => 'BROADCAST',
-            'tipo' => $carteira->getTipo(),
+            'tipo' => $this->tipo,
             'validade' => (object) [
                 'inicio' => $validadeInicio,
                 'fim' => $validadeFim
@@ -94,7 +127,7 @@ class Document extends Model
         ];
         $this->doSendMessage($message);
     }
-    public function sendMessage($carteira, $titulo, $conteudo, $destinatarios, $links = [], $validadeInicio = '', $validadeFim = '')
+    public function sendMessage($titulo, $conteudo, $destinatarios, $links = [], $validadeInicio = '', $validadeFim = '')
     {
         if (empty($validadeInicio))
             $validadeInicio = date('Y-m-d\T00:00:00-03:00');
@@ -124,7 +157,7 @@ class Document extends Model
             'titulo' => $titulo,
             'conteudo' => $conteudo,
             'destino' => 'DIRECIONADA',
-            'tipo' => $carteira->getTipo(),
+            'tipo' => $this->tipo,
             'destinatarios' => $messageDestinatatios,
             'validade' => (object) [
                 'inicio' => $validadeInicio,

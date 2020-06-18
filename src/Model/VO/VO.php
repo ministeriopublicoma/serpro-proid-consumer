@@ -22,7 +22,7 @@ abstract class VO implements \JSONSerializable
         $properties = get_object_vars($this);
         unset($properties['_properties']);
         return $properties;
-    }    
+    }
     public function __toString()
     {
         return json_encode($this, JSON_UNESCAPED_SLASHES);

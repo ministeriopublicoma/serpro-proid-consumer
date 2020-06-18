@@ -15,49 +15,51 @@ Para instalar a biblioteca no seu projeto, utilize o `composer`:
 composer require mpma/serpro-proid-consumer
 ```
 
-## Arquivo de configuração padrão
+## Dados Fornecidos pelo SERPRO
 
-```json
-{
-    "environment": "homol",
-    "debug": false,
-    "serpro": {
-        "baseUrl": {
-            "homol": "https://sandbox.proid.serpro.gov.br/api",
-            "prod": "https://proid.serpro.gov.br/api"
-        },
-        "authUrl": {
-            "homol": "https://valautentikus.estaleiro.serpro.gov.br/autentikus-authn/api",
-            "prod": "https://autentikus.estaleiro.serpro.gov.br/autentikus-authn/api"
-        },
-        "appId": "ID da Aplicação",
-        "appKey": "Chave da Aplicação"
-    }
-}
-```
+Os dados abaixo serão fornecidos pelo SERPRO e são diferentes em homologação e produção. Entre parênteses está o nome do parâmetro que usamos nos exemplos a seguir.
+
+* URL Base (```$config->baseUrl```)
+* URL de Autenticação (```$config->authUrl```)
+* Id da Aplicação (```$config->appId```)
+* Chave da Aplicação (```$config->appKey```)
+* Escopo de Autenticação (```$config->scope```)
+* ID do Documento de Membro (```$config->docIdMembro```)
+* ID do Documento de Servidor (```$config->docIdServidor```)
 
 ## Exemplos de Uso
 
 ### Estrutura básica do script
 
 ```php
-define('CONFIG_FILE', 'config.json');
-
-use \MPMA\ProIDConsumer\Service\Config,
+use \Service\Config,
     \MPMA\ProIDConsumer\Service\Consumer,
     \MPMA\ProIDConsumer\Model\VO\ImagemFuncional,
-    \MPMA\ProIDConsumer\Model\VO\MPMA\DadosFuncionais,
-    \MPMA\ProIDConsumer\Model\VO\MPMA\ImagensFuncionais,
-    \MPMA\ProIDConsumer\Model\VO\MPMA\CarteiraFuncionalServidor,
-    \MPMA\ProIDConsumer\Model\VO\MPMA\CarteiraFuncionalMembro,
-    \MPMA\ProIDConsumer\Model\Document,
-    \MPMA\ProIDConsumer\Model\Carteira;
+    \MPMA\ProIDConsumer\Model\VO\ImagensFuncionais,
+    \MPMA\ProIDConsumer\Model\VO\DadosFuncionais,
+    \MPMA\ProIDConsumer\Model\CarteiraFuncional,
+    \MPMA\ProIDConsumer\Model\Autenticacao;
 
 require 'vendor/autoload.php';
 
-$config = new Config(CONFIG_FILE);
-$consumer = new Consumer();
-$consumer->setConfig($config);
+$authConsumer = new Consumer();
+$dataConsumer = new Consumer();
+
+$authConsumer
+    ->setBaseUrl($config->authUrl)
+    ->setDebug(true);
+
+$autenticacao = new Autenticacao($authConsumer);
+$token = $autenticacao
+    ->setAppId($config->appId)
+    ->setAppKey($config->appKey)
+    ->setScope($config->scope)
+    ->getToken();
+
+$dataConsumer
+    ->setBaseUrl($config->baseUrl)
+    ->setDebug(true)
+    ->setToken($token);
 ```
 
 ### Adicionar um novo documento
@@ -96,95 +98,90 @@ $assinatura_pgj = new ImagemFuncional();
 $assinatura_pgj->load('assets/assinatura_presidente.png');
 $assinatura_pgj->chave = 'assinatura_presidente';
 
+/* Este QRCode é gerado internamente e só é apresentado na cópia digital
+ * da carteira impressa. Não confundir com o QRCode Vio, gerado pelo
+ * ProID autormaticamente.
+ */
+$qrcode = new ImagemFuncional();
+$qrcode->load('assets/qrcode.png');
+$qrcode->chave = 'qrcode';
+
 $imagensFuncionais = new ImagensFuncionais();
 $imagensFuncionais
     ->setFoto($foto)
     ->setAssinatura($assinatura)
     ->setOutrasImagens([
-        $assinatura_pgj
+        $assinatura_pgj,
+        $qrcode
     ]);
 
-$carteira = new CarteiraFuncionalServidor();
-// ou
-$carteira = new CarteiraFuncionalMembro();
+$carteira = new CarteiraFuncional(
+    $dataConsumer,
+    $config->docIdServidor,  // ou $config->docIdMembro
+    $dadosFuncionais,
+    $imagensFuncionais
+);
 
-$carteira
-    ->setDados($dadosFuncionais)
-    ->setImagens($imagensFuncionais);
-
-$document = new Document();
-$document
-    ->setConfig($config)
-    ->setConsumer($consumer)
-    ->add($carteira);
+$carteira->add();
 ```
 
 ### Gerenciar um documento
 
 ```php
 $dadosFuncionais = new DadosFuncionais();
-$dadosFuncionais
-    ->setNumeroRegistro('0000001'); // matrícula do portador do documento
+$dadosFuncionais->setNumeroRegistro('0000001'); // matrícula
 
-$carteira = new CarteiraFuncionalServidor();
-// ou
-$carteira = new CarteiraFuncionalMembro();
-
-$carteira->setDados($dadosFuncionais);
-
-$document = new Document();
-$document
-    ->setConfig($config)
-    ->setConsumer($consumer);
+$carteira = new CarteiraFuncional(
+    $dataConsumer,
+    $config->docIdServidor,  // ou $config->docIdMembro
+    $dadosFuncionais,
+    $imagensFuncionais
+);
 
 /* Bloqueia o documento */
-$document->block($carteira, 'Motivo do bloqueio');
+$carteira->block('Motivo do bloqueio');
 
 /* Adiciona restrição a um documento */
-$document->restrict($carteira, 'Descrição da restrição');
+$carteira->restrict('Descrição da restrição');
 
 /* Ativa (remove bloqueios e/ou restrições) um documento */
-$document->activate($carteira);
+$carteira->activate();
 
 /* Exclui o documento */
-$document->delete($carteira);
+$carteira->delete();
 ```
 
 ### Enviar uma mensagem direcionada
 
 ```php
-$carteira = new CarteiraFuncionalServidor();
-// ou 
-$carteira = new CarteiraFuncionalMembro();
+$carteira = new CarteiraFuncional(
+    $dataConsumer,
+    $config->docIdServidor  // ou $config->docIdMembro
+);
 
-$document = new Document();
-$document
-    ->setConfig($config)
-    ->setConsumer($consumer)
-    ->sendMessage(
-        $carteira,
-        'Teste de mensagem direcionada',  // título
-        'Este é um teste de mensagem ProID',   // conteúdo
-        [ '0000001' ], // matrículas dos destinatários
-        [ 'https://www.mpma.mp.br' => 'Site do Ministério Público do Estado do Maranhão' ] // link
-    );
+$carteira->sendMessage(
+    'Teste de mensagem direcionada',  // título
+    'Este é um teste de mensagem ProID',   // conteúdo
+    [ '0000001' ], // matrículas dos destinatários
+    [ 'https://www.mpma.mp.br' => 'Site do Ministério Público do Estado do Maranhão' ] // link (opcional)
+);
 ```
+
+O método ```sendMessage``` aceita dois outros parâmetros opcionais após o link para informar o início e o fim da validade da mensagem. Estes campos são do tipo _timestamp_ com _timezone_, que pode ser gerado com ```date('Y-m-d\TH:i:s-03:00')```.
 
 ### Enviar uma mensagem para todos
 
 ```php
-$carteira = new CarteiraFuncionalServidor();
-// ou 
-$carteira = new CarteiraFuncionalMembro();
+$carteira = new CarteiraFuncional(
+    $dataConsumer,
+    $config->docIdServidor  // ou $config->docIdMembro
+);
 
-$document = new Document();
-$document
-    ->setConfig($config)
-    ->setConsumer($consumer)
-    ->sendBroadcast(
-        $carteira,
-        'Teste de mensagem geral', // título
-        'Este é um teste de broadcast ProID. Não é necessário informar destinatários.',  // conteúdo
-        [ 'https://www.mpma.mp.br' => 'Site do Ministério Público do Estado do Maranhão' ] // link
-    );
+$carteira->sendBroadcast(
+    'Teste de mensagem geral', // título
+    'Este é um teste de broadcast ProID. Não é necessário informar destinatários.',  // conteúdo
+    [ 'https://www.mpma.mp.br' => 'Site do Ministério Público do Estado do Maranhão' ] // link (opcional)
+);
 ```
+
+O método ```sendBroadcast``` aceita dois outros parâmetros opcionais após o link para informar o início e o fim da validade da mensagem. Estes campos são do tipo _timestamp_ com _timezone_, que pode ser gerado com ```date('Y-m-d\TH:i:s-03:00')```.
